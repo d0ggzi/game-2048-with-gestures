@@ -86,7 +86,9 @@ import os
 import socket
 import struct
 import sys
+import tempfile
 import threading
+import tempfile
 import time
 import timeit
 import traceback
@@ -707,6 +709,9 @@ def find_log_dir(log_dir=None):
     OSError: raised in Python 2 when it cannot find a log directory.
   """
   # Get a list of possible log dirs (will try to use them in order).
+  # NOTE: Google's internal implementation has a special handling for Google
+  # machines, which uses a list of directories. Hence the following uses `dirs`
+  # instead of a single directory.
   if log_dir:
     # log_dir was explicitly specified as an arg, so use it and it alone.
     dirs = [log_dir]
@@ -715,7 +720,7 @@ def find_log_dir(log_dir=None):
     # behavior of the same flag in logging.cc).
     dirs = [FLAGS['log_dir'].value]
   else:
-    dirs = ['/tmp/', './']
+    dirs = [tempfile.gettempdir()]
 
   # Find the first usable log dir.
   for d in dirs:

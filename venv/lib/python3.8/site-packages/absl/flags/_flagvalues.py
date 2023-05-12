@@ -411,7 +411,9 @@ class FlagValues:
     """Registers a new flag variable."""
     fl = self._flags()
     if not isinstance(flag, _flag.Flag):
-      raise _exceptions.IllegalFlagValueError(flag)
+      raise _exceptions.IllegalFlagValueError(
+          f'Expect Flag instances, found type {type(flag)}. '
+          "Maybe you didn't mean to use FlagValue.__setitem__?")
     if not isinstance(name, str):
       raise _exceptions.Error('Flag name must be a string')
     if not name:
@@ -790,8 +792,10 @@ class FlagValues:
           continue
 
       if flag is not None:
+        # LINT.IfChange
         flag.parse(value)
         flag.using_default_value = False
+        # LINT.ThenChange(../testing/flagsaver.py:flag_override_parsing)
       else:
         unparsed_names_and_args.append((name, arg))
 
